@@ -429,6 +429,35 @@ def is_rolled_char(m):
         return False
     return True
 
+
+def kakeraVari(emoji,emojiid,rchannelid,rmessageid,rguildid,snipe_delay):
+    sendEmoji = emoji + ":" +emojiid
+    react_m = bot.getMessage(rchannelid, rmessageid).json()[0]['embeds'][0]
+                
+    cooldown = kakera_wall.get(rguildid,0) - time.time()
+    if cooldown <= 1:
+        logger.info(f"{emoji} was detected on {react_m['author']['name']}:{get_serial(react_m['description'])} in Server: {rguildid}")
+        time.sleep(snipe_delay)
+        bot.addReaction(rchannelid,rmessageid,sendEmoji)
+    else:
+        logger.info(f"Skipped {emoji} found on {react_m['author']['name']}:{get_serial(react_m['description'])} in Server: {rguildid}")
+        return 
+
+    warn_check = mudae_warning(rchannelid)
+    kakerawallwait = wait_for(bot,lambda r: warn_check(r) and 'kakera' in r.parsed.auto()['content'],timeout=5)
+
+    if kakerawallwait != None:
+        time_to_wait = waitk_finder.findall(kakerawallwait['content'])
+    else:
+        time_to_wait = []
+                
+    if len(time_to_wait):
+        timegetter = (int(time_to_wait[0][0] or "0")*60+int(time_to_wait[0][1] or "0"))*60
+        print(f"{timegetter} for kakera_wall was set for Server : {rguildid}")
+        kakera_wall[rguildid] = timegetter + time.time()
+
+
+
 @bot.gateway.command
 def on_message(resp):
     global user
@@ -673,30 +702,7 @@ def on_message(resp):
                 bot.addReaction(rchannelid,rmessageid,sendEmoji)
                 
             if emojiid != None and emoji.lower() in KakeraVari:
-                sendEmoji = emoji + ":" +emojiid
-                react_m = bot.getMessage(rchannelid, rmessageid).json()[0]['embeds'][0]
-                
-                cooldown = kakera_wall.get(rguildid,0) - time.time()
-                if cooldown <= 1:
-                    logger.info(f"{emoji} was detected on {react_m['author']['name']}:{get_serial(react_m['description'])} in Server: {rguildid}")
-                    time.sleep(snipe_delay)
-                    bot.addReaction(rchannelid,rmessageid,sendEmoji)
-                else:
-                    logger.info(f"Skipped {emoji} found on {react_m['author']['name']}:{get_serial(react_m['description'])} in Server: {rguildid}")
-                    return 
-
-                warn_check = mudae_warning(rchannelid)
-                kakerawallwait = wait_for(bot,lambda r: warn_check(r) and 'kakera' in r.parsed.auto()['content'],timeout=5)
-
-                if kakerawallwait != None:
-                    time_to_wait = waitk_finder.findall(kakerawallwait['content'])
-                else:
-                    time_to_wait = []
-                
-                if len(time_to_wait):
-                    timegetter = (int(time_to_wait[0][0] or "0")*60+int(time_to_wait[0][1] or "0"))*60
-                    print(f"{timegetter} for kakera_wall was set for Server : {rguildid}")
-                    kakera_wall[rguildid] = timegetter + time.time()
+                kakeraVari(emoji,emojiid,rchannelid,rmessageid,rguildid,snipe_delay)
                     
             # if emojiid != None and emoji.lower() in soulLink:
                 # react_m = bot.getMessage(rchannelid, rmessageid).json()[0]['embeds'][0]
