@@ -430,7 +430,7 @@ def is_rolled_char(m):
     return True
 
 
-def kakeraVari(emoji,emojiid,rchannelid,rmessageid,rguildid,snipe_delay):
+def kakara(emoji,emojiid,rchannelid,rmessageid,rguildid,snipe_delay):
     sendEmoji = emoji + ":" +emojiid
     react_m = bot.getMessage(rchannelid, rmessageid).json()[0]['embeds'][0]
                 
@@ -702,7 +702,7 @@ def on_message(resp):
                 bot.addReaction(rchannelid,rmessageid,sendEmoji)
                 
             if emojiid != None and emoji.lower() in KakeraVari:
-                kakeraVari(emoji,emojiid,rchannelid,rmessageid,rguildid,snipe_delay)
+                kakara(emoji,emojiid,rchannelid,rmessageid,rguildid,snipe_delay)
                     
             # if emojiid != None and emoji.lower() in soulLink:
                 # react_m = bot.getMessage(rchannelid, rmessageid).json()[0]['embeds'][0]
